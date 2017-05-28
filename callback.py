@@ -7,8 +7,8 @@ import json
 from random import randint as rand
 
 import importlib
-from . import checks
-from .send_message import SendMessage
+import checks
+from send_message import SendMessage
 
 __version__ = "1.0.2"
 __doc__ = """
