@@ -1,7 +1,10 @@
 import json
 import platform
 from flask import Flask, request
-from . import callback
+import rethinkdb as r
+
+c = r.connect()
+c.use("Facebook")
 
 app = Flask(__name__)
 
@@ -42,8 +45,7 @@ def _callback():
             print("\n=-=-=-=-=")
             print("Request went through!")
             print("=-=-=-=-=\n")
-            callback.Main(message,
-                          user_id)
+            r.table("Messages").update({'info':initial_request}).run(c)
             return "POST, but careful"
         except Exception as e:
             print("\n=-=-=-=-=")
@@ -51,7 +53,6 @@ def _callback():
             print(e)
             print("=-=-=-=-=\n")
             return "Error"
-
     else:
         print("Else statement got triggered")
         return "Anything else"
