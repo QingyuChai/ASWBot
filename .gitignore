@@ -2,3 +2,5 @@
 *.pyc
 
 .remote-sync.json
+
+token.txt
