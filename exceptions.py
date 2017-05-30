@@ -1,8 +1,16 @@
-class InvalidArguments:
-    pass
+class InvalidArguments(Exception):
+    def __init__(self):
+        self.message = "[-] Invalid Arguments passed."
 
-class InvalidCommand:
-    pass
+    def __str__(self):
+        return self.message
 
-class TooManyMessages:
+class InvalidCommand(Exception):
+    def __init__(self):
+        self.message = "[-] Invalid Command called."
+
+    def __str__(self):
+        return self.message
+
+class TooManyMessages(Exception):
     pass
