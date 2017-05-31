@@ -5,17 +5,29 @@ from pydispatch import dispatcher
 import exceptions
 import contentTypes
 import rethinkdb as r
-import commands
+
+# erase the modules file
+with open('modules.json', 'w') as f:
+    f.write(json.dumps({
+        'modules' : []
+    },
+                       indent=4,
+                       sort_keys=True)
+            )
 
 __version__ = "2.0.0"
 
 class Bot:
     def __init__(self):
+        # Initialize prints, so we know what is going on
         print("\n\n\n\n=====================================")
         self.id = "413050579062125"
         print("[+] Connecting to Database...")
         self.c = r.connect()
         self.c.use("Facebook")
+        print("[+] Loading modules...")
+        import commands
+        self.modules = json.loads(open('modules.json','r').read())['modules']
         print("[+] Initalizing listeners...")
         self.initialize_listeners()
         print("[+] Listening to input...")
@@ -34,14 +46,33 @@ class Bot:
         print("[+] Message received. Content:\n    "+message.content)
         print("[+] Sending command signal...")
         try:
-            dispatcher.send(signal='command',
-                            ctx=context)
+            # We want it to respond if it replies with a command that does not
+            # exist or is not available
+            if context.message.command not in self.modules:
+                raise exceptions.InvalidCommand
+            dispatcher.send(signal=context.message.command,
+                            ctx=context,
+                            args=context.message.arguments)
         except exceptions.InvalidCommand:
-            print("[-] Command '{}' doesn't exist.".format(context.message.command))
+            # Command doesn't exist
+            print("[-] Command '{}' doesn't exist."\
+                  .format(context.message.command))
             context.send("Sorry, invalid command.")
+        except exceptions.InvalidArguments:
+            # Invalid command arguments passed
+            print("[-] Command '{}' was passed with invalid arguments."\
+                  .format(context.message.command))
+            context.send("Sorry, invalid arguments.")
+        except exceptions.Restart:
+            # Reload commands
+            context.send("Restarting...")
+            print("[=] Restarting...")
+            print("=====================================")
+            raise exceptions.Restart
         except Exception as e:
-            context.send("Sorry, an unexpected error has occured.")
+            # Unexpected error
             print("[-] Unexpected Error occured. Error logs here:\n\n"+e)
+            context.send("Sorry, an unexpected error has occured.")
         print("=====================================")
 
     def initialize_listeners(self):
@@ -86,6 +117,8 @@ def main():
     while True:
         try:
             Bot()
+        except exceptions.Restart:
+            pass
         except Exception as e:
             print("[-] Application crashed unexpectedly. Error logs here:\n\n")
             print(e)
