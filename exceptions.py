@@ -12,5 +12,12 @@ class InvalidCommand(Exception):
     def __str__(self):
         return self.message
 
+class Restart(Exception):
+    def __init__(self):
+        self.message = "[=] Restarting."
+
+    def __str__(self):
+        return self.message
+
 class TooManyMessages(Exception):
     pass
