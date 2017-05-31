@@ -70,6 +70,25 @@ Here are some more example commands
 """
 
 @checks.command
+def shutdown(ctx, args):
+    ctx.send("Shutting down...")
+    print("[=] Shutdown requested.")
+    print("=====================================")
+    exit()
+
+@checks.command
+def restart(ctx, args):
+    raise exceptions.Restart
+
+
+@checks.command
+def help(ctx, args):
+    header = "Here are a list of commands:\n\n"
+    commands = json.loads(open('modules.json','r').read())['modules']
+    body = " || ".join(commands)
+    ctx.send(header+body)
+
+@checks.command
 def hello(ctx, args):
     ctx.send("how are you doing")
 
@@ -109,6 +128,7 @@ def time(ctx, args):
 def google(ctx, args):
     """Google something"""
     if not args:
+        raise exceptions.InvalidArguments
         return
     s = "+".join(args)
     msg = "https://www.google.com/?q={s}#newwindow=1&q={s}".format(s=s)
@@ -120,6 +140,7 @@ def example(ctx, args):
     # You want the 2 lines below IF you want to user to put in arguments,
     # such as "today", or "23"
     if not args:
+        raise exceptions.InvalidArguments
         return
     msg = "Whatever you want as your reply"
     ctx.send(msg)
@@ -129,9 +150,10 @@ def reply(ctx, args):
     """Reply with your current message"""
 
     if not args:
+        raise exceptions.InvalidArguments
         return
 
-    msg = " ".join(ctx, args)
+    msg = " ".join(args)
     ctx.send(msg)
 
 
@@ -142,10 +164,9 @@ def reply(ctx, args):
 
 """
 Ignore what is below here
-"""
 
 def run_command(ctx):
-    """Choose what command to run"""
+    \"\"\"Choose what command to run\"\"\"
     message = ctx.message
     command_name = message.command
     args = message.arguments
@@ -173,3 +194,4 @@ def run_command(ctx):
 dispatcher.connect(run_command,
                    signal='command',
                    sender=dispatcher.Any)
+"""
