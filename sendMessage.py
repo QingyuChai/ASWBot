@@ -25,13 +25,15 @@ class Send:
                       "ZB0GhktwaQZCGldFSlN5udOYRY4pNEf6OdfwZCe6QvNL5uCwYMOcMTPg"
                       "Apkhv8Mx5gZDZD")
 
-    def message_validate(self, message, quick_replies):
+    def message_validate(self, message, payload=None):
         """
         Make a message readable by Facebook.
+
+        This goes under 'message' for payloads
         {
-            "content_type":"text",
-            "title":#thereply,
-            "payload":"#whatisreturnedthroughcurl"
+            "content_type" : "text",
+            "title" : #thereply,
+            "payload" : "#whatisreturnedthroughcurl"
         }
         """
         to_return = {
@@ -42,14 +44,26 @@ class Send:
                             "text" : message,
                         }
                     }
-        for reply in quick_replies:
-            to_return['message']['quick_replies'].append(reply)
+        if payload:
+            to_return['message']['quick_replies'] = []
+            for k, v in payload.items():
+                quick_reply = {
+                    "content_type" : "text",
+                    "title" : k,
+                    "payload" : v
+                }
+                to_return['message']['quick_replies'].append(quick_reply)
+            else:
+                print("[+] Added stuff to payload.")
         return to_return
 
-    def send(self, message):
+    def send(self, message, payload=None):
         url = ("https://graph.facebook.com/v2.6/me/messages?"
                "access_token={}".format(self.token))
-        to_reply = json.dumps(self.message_validate(message, []))
+        if payload:
+            to_reply = json.dumps(self.message_validate(message, payload))
+        else:
+            to_reply = json.dumps(self.message_validate(message))
         print("[+] Preparing to send message...")
         c = pycurl.Curl()
         c.setopt(c.URL, url)
