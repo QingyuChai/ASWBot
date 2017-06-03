@@ -60,40 +60,75 @@ Full working example command below:
 
 # Note-to-self: Decorators are executed when file is started!
 
-@checks.command
-def hi(ctx, args):
-    message = "Hey there!"
-    ctx.send(message)
-
 """
 Here are some more example commands
 """
 
 @checks.command
-def shutdown(ctx, args):
+def _eval(ctx,
+          args):
+    if not args:
+        raise exceptions.InvalidArguments
+    to_eval = " ".join(args)
+    try:
+        result = eval(to_eval)
+    except:
+        result = "Something went horrible wrong. Horribly, horribly wrong."
+        print("[+] Something bad happened.")
+    ctx.send(str(result))
+
+@checks.command
+def hi(ctx,
+       args):
+    message = "Hey there!"
+    ctx.send(message)
+
+@checks.command
+def shutdown(ctx,
+             args):
     ctx.send("Shutting down...")
     print("[=] Shutdown requested.")
     print("=====================================")
     exit()
 
 @checks.command
-def restart(ctx, args):
+def restart(ctx,
+            args):
     raise exceptions.Restart
 
 
 @checks.command
-def help(ctx, args):
-    header = "Here are a list of commands:\n\n"
-    commands = json.loads(open('modules.json','r').read())['modules']
-    body = " || ".join(commands)
-    ctx.send(header+body)
+def help(ctx,
+         args):
+    if not args:
+        payload = {
+            'chucknorris' : 'chucknorris',
+            'time' : 'time'
+        }
+        header = "Here are a list of commands:\n\n"
+        commands = json.loads(open('modules.json','r').read())['modules']
+        commands = ["| {} |".format(command) for command in commands]
+        body = "\n".join(commands)
+        ctx.send(header+body,
+                 payload=payload)
 
 @checks.command
-def hello(ctx, args):
+def tic(ctx,
+        args):
+    ctx.send("Tac",
+             payload={
+                 'same':'lmao'
+                 }
+             )
+
+@checks.command
+def hello(ctx,
+          args):
     ctx.send("how are you doing")
 
 @checks.command
-def chucknorris(ctx, args):
+def chucknorris(ctx,
+                args):
     """Chuck norris jokes"""
     url = "https://api.chucknorris.io/jokes/random"
     req = urllib.request.Request(url, headers={
@@ -105,7 +140,8 @@ def chucknorris(ctx, args):
     ctx.send(joke)
 
 @checks.command
-def time(ctx, args):
+def time(ctx,
+         args):
     """Get current time"""
     temp = datetime.utcnow()
     now = temp + timedelta(hours=2)
@@ -125,7 +161,8 @@ def time(ctx, args):
     ctx.send(msg)
 
 @checks.command
-def google(ctx, args):
+def google(ctx,
+           args):
     """Google something"""
     if not args:
         raise exceptions.InvalidArguments
@@ -135,7 +172,8 @@ def google(ctx, args):
     ctx.send(msg)
 
 @checks.command
-def example(ctx, args):
+def example(ctx,
+            args):
     """Example command"""
     # You want the 2 lines below IF you want to user to put in arguments,
     # such as "today", or "23"
@@ -146,7 +184,8 @@ def example(ctx, args):
     ctx.send(msg)
 
 @checks.command
-def reply(ctx, args):
+def reply(ctx,
+          args):
     """Reply with your current message"""
 
     if not args:
@@ -163,7 +202,10 @@ def reply(ctx, args):
 
 
 """
+
 Ignore what is below here
+
+
 
 def run_command(ctx):
     \"\"\"Choose what command to run\"\"\"

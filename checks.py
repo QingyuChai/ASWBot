@@ -7,12 +7,19 @@ __doc__ = """
 Checks for the Facebook bot
 """
 
+def is_dev(func):
+    def check(func):
+        func.dev_only = True
+        return func
+    return check(func)
+
 def command(func):
     def check(func):
+        name = str(func.__name__).replace("_","")
         try:
             with open('modules.json', 'r') as f:
                 modules = json.loads(f.read())
-                modules['modules'].append(func.__name__)
+                modules['modules'].append(name)
         except Exception as e:
             print("[-] Error loading modules file. Shutting down.")
             exit()
@@ -22,7 +29,7 @@ def command(func):
                            sort_keys=True)
                 )
         dispatcher.connect(func,
-                           signal=func.__name__,
+                           signal=name,
                            sender=dispatcher.Any)
         func.is_command = True
         return func

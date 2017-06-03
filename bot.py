@@ -1,4 +1,5 @@
 import json
+import asyncio
 from types import *
 
 from pydispatch import dispatcher
@@ -33,7 +34,8 @@ class Bot:
         print("[+] Listening to input...")
         self.listen()
 
-    def on_message(self, message):
+    def on_message(self,
+                   message):
         """
         Event on_message:
             For every message sent, this function is called to process the
@@ -48,8 +50,11 @@ class Bot:
         try:
             # We want it to respond if it replies with a command that does not
             # exist or is not available
+            print("[+] Command \"{}\" accepted... Checking "
+                  "for validity.".format(context.message.command))
             if context.message.command not in self.modules:
                 raise exceptions.InvalidCommand
+            print("[+] Command valid, processing now...")
             dispatcher.send(signal=context.message.command,
                             ctx=context,
                             args=context.message.arguments)
