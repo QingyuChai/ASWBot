@@ -1,5 +1,6 @@
 import json
 import asyncio
+import threading
 from types import *
 
 from pydispatch import dispatcher
@@ -32,6 +33,7 @@ class Bot:
         print("[+] Initalizing listeners...")
         self.initialize_listeners()
         print("[+] Listening to input...")
+        self.thread_count = 0
         self.listen()
 
     def on_message(self,
@@ -45,27 +47,28 @@ class Bot:
             # We don't want the bot to answer it's own messages
             return
         context = contentTypes.Context(message=message)
-        print("[+] Message received. Content:\n    "+message.content)
-        print("[+] Sending command signal...")
+        thread_id = "[Thread#{}]".format(self.thread_count)
+        print(thread_id+"[+] Message received. Content:\n"+message.content)
+        print(thread_id+"[+] Sending command signal...")
         try:
             # We want it to respond if it replies with a command that does not
             # exist or is not available
-            print("[+] Command \"{}\" accepted... Checking "
+            print(thread_id+"[+] Command \"{}\" accepted... Checking "
                   "for validity.".format(context.message.command))
             if context.message.command not in self.modules:
                 raise exceptions.InvalidCommand
-            print("[+] Command valid, processing now...")
+            print(thread_id+"[+] Command valid, processing now...")
             dispatcher.send(signal=context.message.command,
                             ctx=context,
                             args=context.message.arguments)
         except exceptions.InvalidCommand:
             # Command doesn't exist
-            print("[-] Command '{}' doesn't exist."\
+            print(thread_id+"[-] Command '{}' doesn't exist."\
                   .format(context.message.command))
             context.send("Sorry, invalid command.")
         except exceptions.InvalidArguments:
             # Invalid command arguments passed
-            print("[-] Command '{}' was passed with invalid arguments."\
+            print(thread_id+"[-] Command '{}' was passed with invalid arguments."\
                   .format(context.message.command))
             context.send("Sorry, invalid arguments.")
         except exceptions.Restart:
@@ -76,9 +79,8 @@ class Bot:
             raise exceptions.Restart
         except Exception as e:
             # Unexpected error
-            print("[-] Unexpected Error occured. Error logs here:\n\n"+e)
+            print(thread_id+"[-] Unexpected Error occured. Error logs here:\n\n"+e)
             context.send("Sorry, an unexpected error has occured.")
-        print("=====================================")
 
     def initialize_listeners(self):
         """
@@ -101,8 +103,8 @@ class Bot:
         }
         """
         feed = r.table("Messages").changes().run(self.c)
-        print("=====================================")
         for change in feed:
+            self.thread_count += 1
             initial_request = change['new_val']['info']
             message = initial_request['message']
             author = initial_request['sender']['id']
@@ -115,8 +117,18 @@ class Bot:
                                            message=message,
                                            timestamp=timestamp,
                                            recipient=recipient)
-            dispatcher.send(signal='on_message',
-                            message=message)
+            #dispatcher.send(signal='on_message',
+            #                message=message)
+            if message.author == self.id:
+                # We don't want the bot to answer it's own messages
+                continue
+            print("{}[+] Starting thread...".format("[Thread#{}]".format(
+                self.thread_count
+                )))
+            thread = threading.Thread(target=self.on_message,
+                                      args=(message,))
+
+            thread.start()
 
 def main():
     while True:
