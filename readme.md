@@ -4,7 +4,7 @@
 
 - How do I set up a module file?
 
-You import the files *checks* and *exceptions*.
+You import the file *checks*
 
 ```python
 
@@ -86,5 +86,7 @@ ctx.send("myMessage", payload=my_quick_reply)
 ```
 
 - How do I get command arguments?
+
+How
 
 - How do I manage exceptions?
