@@ -3,6 +3,7 @@ import urllib.request
 import json
 from datetime import datetime, timedelta
 from random import randint as rand
+from time import sleep
 
 import checks
 import exceptions
@@ -82,6 +83,31 @@ def hi(ctx,
        args):
     message = "Hey there!"
     ctx.send(message)
+
+@checks.command
+def remind(ctx,
+           args):
+    argE = None
+    if not args:
+        argE = True
+    elif len(args) < 2:
+            argE = True
+    else:
+        try:
+            int(args[0])
+        except:
+            argE = True
+    if argE:
+        raise exceptions.InvalidArguments
+
+    print("[+] Sleep called for {} second(s).".format(args[0]))
+    sleep(int(args[0]))
+    print("[+] Sleep done.")
+    ctx.send("Slept for {} second(s).".format(args[0]))
+    ctx.send(" ".join(args[1:]))
+
+
+
 
 @checks.command
 def shutdown(ctx,
