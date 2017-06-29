@@ -14,16 +14,15 @@ LISTOFQUOTES = [
     'quote 3'
 ]
 
-#str_replace("<break/>")
+# str_replace("<break/>")
+
+
 class Send:
     """Send messages"""
 
-    def __init__(self, user_id : str):
+    def __init__(self, user_id: str):
         self.user_id = user_id
-        self.token = ("EAASEeFpPvkABAJ9676sXYE1E8qeM7qOCCuuLkZB9lkYABmZCZAyZAk7"
-                      "ZA6WHZBQlGNY0PlPGJOtcd81xv4ON2bhOeWMZBuUYRTP7ZCMq2K2jVDv"
-                      "ZB0GhktwaQZCGldFSlN5udOYRY4pNEf6OdfwZCe6QvNL5uCwYMOcMTPg"
-                      "Apkhv8Mx5gZDZD")
+        self.token = json.loads(open('token.json', 'r').read())['token']
 
     def message_validate(self, message, payload=None):
         """
@@ -37,20 +36,20 @@ class Send:
         }
         """
         to_return = {
-                        "recipient" : {
-                            "id" : self.user_id
-                        },
-                        "message" : {
-                            "text" : message,
-                        }
-                    }
+            "recipient": {
+                "id": self.user_id
+            },
+            "message": {
+                "text": message,
+            }
+        }
         if payload:
             to_return['message']['quick_replies'] = []
             for k, v in payload.items():
                 quick_reply = {
-                    "content_type" : "text",
-                    "title" : k,
-                    "payload" : v
+                    "content_type": "text",
+                    "title": k,
+                    "payload": v
                 }
                 to_return['message']['quick_replies'].append(quick_reply)
             else:

@@ -14,3 +14,7 @@ token.txt
 *.iml
 
 sftp-config.json
+
+token.txt
+
+token.json
