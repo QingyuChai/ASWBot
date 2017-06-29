@@ -1,4 +1,6 @@
 import json
+import asyncio
+import contentTypes
 
 from pydispatch import dispatcher
 
@@ -7,30 +9,40 @@ __doc__ = """
 Checks for the Facebook bot
 """
 
-def is_dev(func):
-    def check(func):
-        func.dev_only = True
-        return func
-    return check(func)
+import inspect
 
-def command(func):
+
+def getSource(meth):
+    if inspect.ismethod(meth):
+        for cls in inspect.getmro(meth.__self__.__class__):
+            if cls.__dict__.get(meth.__name__) is meth:
+                return cls
+        meth = meth.__func__  # fallback to __qualname__ parsing
+    if inspect.isfunction(meth):
+        cls = getattr(
+            inspect.getmodule(meth),
+            meth.__qualname__.split(
+                '.<locals>',
+                1)[0].rsplit(
+                '.',
+                1)[0])
+        if isinstance(cls, type):
+            return cls
+    return None
+
+commands = {}
+
+
+def command(name=None):
     def check(func):
-        name = str(func.__name__).replace("_","")
-        try:
-            with open('modules.json', 'r') as f:
-                modules = json.loads(f.read())
-                modules['modules'].append(name)
-        except Exception as e:
-            print("[-] Error loading modules file. Shutting down.")
-            exit()
-        with open('modules.json', 'w') as f:
-            f.write(json.dumps(modules,
-                           indent=4,
-                           sort_keys=True)
-                )
-        dispatcher.connect(func,
-                           signal=name,
-                           sender=dispatcher.Any)
+        setattr(func, 'is_command', True)
+        if name:
+            setattr(func, '__name__', name)
+            setattr(func, 'name', name)
         func.is_command = True
         return func
-    return check(func)
+    return check
+
+
+def getCommands():
+    return commands
