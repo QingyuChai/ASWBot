@@ -2,6 +2,7 @@ from sendMessage import Send
 
 
 class Message:
+
     def __init__(self,
                  author,
                  message,
@@ -15,7 +16,10 @@ class Message:
             args = ['something', 'please']
         """
         self.author = author
-        self.quick_replies = message['quick_reply']
+        try:
+            self.quick_replies = message['quick_reply']
+        except KeyError:
+            pass
         self.content = message['text']
         self.time = timestamp
         self.recipient = recipient
@@ -36,9 +40,43 @@ class Message:
             args = None
         return args
 
+
 class Context:
+    """The context class"""
+
     def __init__(self,
                  message):
         self.message = message
         self.send = Send(message.author).send
         self.say = self.send
+
+
+class Module:
+    """The module class"""
+
+    def __init__(self,
+                 name,
+                 commands):
+        self.name = name
+        self.commands = commands
+
+
+class Command:
+    """The command class"""
+
+    def __init__(self,
+                 func,
+                 module,
+                 name):
+        self.run = func
+        self.name = name
+        self.module = module
+
+"""
+class User:
+    def __init__(self,
+                 name=None,
+                 id):
+        #self.name =
+        pass
+"""
