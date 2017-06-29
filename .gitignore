@@ -12,3 +12,5 @@ token.txt
 *.xml
 
 *.iml
+
+sftp-config.json
