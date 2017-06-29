@@ -1,4 +1,6 @@
 import json
+import asyncio
+import websockets
 import platform
 from flask import Flask, request
 import rethinkdb as r
@@ -41,12 +43,19 @@ def _callback():
     elif request.method == 'POST':
         try:
             initial_request = request.get_json()['entry'][0]['messaging'][0]
+            # Check if it is a message
             message = initial_request['message']['text']
             user_id = initial_request['sender']['id']
             print("\n=-=-=-=-=")
             print("Request went through!")
             print("=-=-=-=-=\n")
-            r.table("Messages").update({'info':initial_request}).run(c)
+            async def hello():
+                async with websockets.connect('ws://localhost:1111') as websocket:
+
+                    reply = await websocket.send(str(initial_request))
+
+            asyncio.get_event_loop().run_until_complete(hello())
+
             return "POST, but careful"
         except Exception as e:
             print("\n=-=-=-=-=")
