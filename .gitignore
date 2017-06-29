@@ -8,3 +8,7 @@ token.txt
 token.txt
 
 token.txt
+
+*.xml
+
+*.iml
