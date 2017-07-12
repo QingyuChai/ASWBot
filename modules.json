@@ -1,6 +1,7 @@
 {
   "modules":[
     "core",
-    "help"
+    "help",
+    "fun"
     ]
 }

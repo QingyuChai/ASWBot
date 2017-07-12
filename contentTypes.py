@@ -51,16 +51,6 @@ class Context:
         self.say = self.send
 
 
-class Module:
-    """The module class"""
-
-    def __init__(self,
-                 name,
-                 commands):
-        self.name = name
-        self.commands = commands
-
-
 class Command:
     """The command class"""
 
@@ -70,7 +60,44 @@ class Command:
                  name):
         self.run = func
         self.name = name
-        self.module = module
+        self.module = type(module).__name__
+
+
+class Colours:
+
+    def __init__(self):
+        self._header = '\033[95m'
+        self._blue = '\033[94m'
+        self._green = '\033[92m'
+        self._warning = '\033[93m'
+        self._fail = '\033[91m'
+        self._bold = '\033[1m'
+        self._underline = '\033[4m'
+        self._end = '\033[0m'
+
+    def end(self, text):
+        return text + self._end
+
+    def orange(self, text):
+        return self.end(self._header + text)
+
+    def blue(self, text):
+        return self.end(self._blue + text)
+
+    def green(self, text):
+        return self.end(self._green + text)
+
+    def yellow(self, text):
+        return self.end(self._warning + text)
+
+    def red(self, text):
+        return self.end(self._fail + text)
+
+    def bold(self, text):
+        return self.end(self._bold + text)
+
+    def underline(self, text):
+        return self.end(self._underline + text)
 
 """
 class User:

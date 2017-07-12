@@ -57,7 +57,7 @@ class Bot:
         # print(myIter)
         for myMethod in myIter:
             methodFunc = myMethod[1]
-            methodName = methodFunc.__name__
+            methodName = methodFunc.__name__.lower()
             if hasattr(methodFunc, "is_command"):
                 # do something with the method and class
                 tempCom = contentTypes.Command(func=methodFunc,
