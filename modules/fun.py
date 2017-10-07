@@ -28,12 +28,6 @@ class Fun:
                      'chucknorris': 'chucknorris'
                  })
 
-    @checks.command()
-    async def kys(self,
-                  ctx,
-                  args):
-        ctx.send("Time to kill myself. Feelsbadman.")
-
 
 def setup(bot):
     bot.addModule(Fun(bot))
