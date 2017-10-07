@@ -1,5 +1,7 @@
 # README - ASWBot
 
+# NOTE - TUTORIAL HAS TO BE UPDATED FOR ASYNC
+
 # Very important information
 
 - How do I set up a module file?
