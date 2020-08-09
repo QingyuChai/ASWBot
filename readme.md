@@ -1,6 +1,6 @@
 # README - ASWBot
-
-# NOTE - TUTORIAL HAS TO BE UPDATED FOR ASYNC
+# NOTE 1 - Due to all types of changes regarding the use of Facebook's API for making bots for Facebook pages, it is safe to assume that this bot will not work anymore.
+# NOTE 2 - Tutorial not up to date with the async implementation
 
 # Very important information
 
